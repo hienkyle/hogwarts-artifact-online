@@ -148,7 +148,7 @@ class ArtifactServiceTest {
         oldArtifact.setImgUrl("imageUrl");
 
         Artifact update = new Artifact();
-        update.setId("1250808601744904192");
+//        update.setId("1250808601744904192");
         update.setName("Invisibility Cloak");
         update.setDescription("A new description.");
         update.setImgUrl("imageUrl");
