@@ -2,29 +2,24 @@ package edu.tcu.cs.hogwartsartifactsonline.hogwartuser;
 
 import edu.tcu.cs.hogwartsartifactsonline.system.exception.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @Transactional
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-//    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-//        this.userRepository = userRepository;
-//        this.passwordEncoder = passwordEncoder;
-//    }
-
-
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<HogwartsUser> findAll(){
@@ -38,8 +33,7 @@ public class UserService {
 
     public HogwartsUser save(HogwartsUser newUser){
         // TODO: we need to encode plain text password
-//        newUser.setPassword(this.passwordEncoder.encode(newUser.getPassword()));
-        newUser.setPassword(newUser.getPassword());
+        newUser.setPassword(this.passwordEncoder.encode(newUser.getPassword()));
         return this.userRepository.save(newUser);
     }
 
@@ -67,10 +61,10 @@ public class UserService {
         this.userRepository.deleteById(userId);
     }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-//        return this.userRepository.findByUsername(username)
-//                .map(user -> new MyUserPrincipal(user))
-//                .orElseThrow(() -> new UsernameNotFoundException("username " + username + " is not found"));
-//    }
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+        return this.userRepository.findByUsername(username) // find this user from the database
+                .map(user -> new MyUserPrincipal(user)) // if found, wrap inside a MyUserPrincipal object
+                .orElseThrow(() -> new UsernameNotFoundException("username " + username + " is not found")); // otherwise, throw and exception
+    }
 }
