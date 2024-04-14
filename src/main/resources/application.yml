@@ -9,3 +9,7 @@ spring:
 api:
   endpoint:
     base-url: /api/v1
+#security:
+#  user:
+#    name: user
+#    password: password
