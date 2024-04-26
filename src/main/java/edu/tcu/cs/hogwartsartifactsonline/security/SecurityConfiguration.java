@@ -77,10 +77,10 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(this.customBasicAuthenticationEntryPoint))
-                .oauth2ResourceServer(oath2ResourceServer -> oath2ResourceServer.jwt(Customizer.withDefaults())
-                        .and()
-                        .authenticationEntryPoint(this.customBearerTokenAuthenticationEntryPoint)
-                        .accessDeniedHanlder(this.customBearerTokenAccessDeniedHandler))
+                .oauth2ResourceServer(oath2ResourceServer -> oath2ResourceServer.jwt(Customizer.withDefaults()))
+//                        .and()
+//                        .authenticationEntryPoint(this.customBearerTokenAuthenticationEntryPoint)
+//                        .accessDeniedHanlder(this.customBearerTokenAccessDeniedHandler))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
