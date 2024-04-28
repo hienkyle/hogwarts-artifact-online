@@ -9,6 +9,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import edu.tcu.cs.hogwartsartifactsonline.system.CustomBasicAuthenticationEntryPoint;
 import edu.tcu.cs.hogwartsartifactsonline.system.CustomBearerTokenAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -70,6 +71,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // protect the endpoint
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/users/**").hasAuthority("ROLE_admin") // protect the endpoint
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                        .requestMatchers(EndpointRequest.to("health", "info", "prometheus")).permitAll()
+                        .requestMatchers(EndpointRequest.toAnyEndpoint().excluding("health", "info", "prometheus")).hasAuthority("ROLE_admin")
                         // disallow anything else
                         .anyRequest().authenticated() // always a good idea to put this as last
                 )
@@ -77,10 +80,10 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(this.customBasicAuthenticationEntryPoint))
-                .oauth2ResourceServer(oath2ResourceServer -> oath2ResourceServer.jwt(Customizer.withDefaults()))
-//                        .and()
-//                        .authenticationEntryPoint(this.customBearerTokenAuthenticationEntryPoint)
-//                        .accessDeniedHanlder(this.customBearerTokenAccessDeniedHandler))
+                .oauth2ResourceServer(oath2ResourceServer -> oath2ResourceServer
+                        .jwt(Customizer.withDefaults())
+                        .authenticationEntryPoint(this.customBearerTokenAuthenticationEntryPoint)
+                        .accessDeniedHandler(this.customBearerTokenAccessDeniedHandler))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
